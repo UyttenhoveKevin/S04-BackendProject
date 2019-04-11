@@ -16,7 +16,7 @@ namespace Spinning.Models.Data
         public virtual DbSet<SpinningUser> SpinningUsers { get; set; }
         public virtual DbSet<Timeslot> Timeslots { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<Penalty> Penalties { get; set; }
 
-        
     }
 }

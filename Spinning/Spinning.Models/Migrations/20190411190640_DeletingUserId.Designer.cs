@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spinning.Models.Data;
 
 namespace Spinning.Models.Migrations
 {
     [DbContext(typeof(SpinningDBContext))]
-    partial class SpinningDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190411190640_DeletingUserId")]
+    partial class DeletingUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,38 +131,19 @@ namespace Spinning.Models.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Spinning.Models.Penalty", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("EnddatePenalty");
-
-                    b.Property<string>("SpinningUserId");
-
-                    b.Property<DateTime>("StartdatePenalty");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SpinningUserId");
-
-                    b.ToTable("Penalties");
-                });
-
             modelBuilder.Entity("Spinning.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("SpinningUserId");
+                    b.Property<string>("SpinningUsersId");
 
-                    b.Property<int?>("TimeslotId");
+                    b.Property<int>("TimeslotId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpinningUserId");
+                    b.HasIndex("SpinningUsersId");
 
                     b.HasIndex("TimeslotId");
 
@@ -301,22 +284,16 @@ namespace Spinning.Models.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Spinning.Models.Penalty", b =>
-                {
-                    b.HasOne("Spinning.Models.SpinningUser", "SpinningUser")
-                        .WithMany("Penalties")
-                        .HasForeignKey("SpinningUserId");
-                });
-
             modelBuilder.Entity("Spinning.Models.Reservation", b =>
                 {
-                    b.HasOne("Spinning.Models.SpinningUser", "SpinningUser")
+                    b.HasOne("Spinning.Models.SpinningUser", "SpinningUsers")
                         .WithMany("Reservations")
-                        .HasForeignKey("SpinningUserId");
+                        .HasForeignKey("SpinningUsersId");
 
                     b.HasOne("Spinning.Models.Timeslot", "Timeslot")
                         .WithMany("Reservations")
-                        .HasForeignKey("TimeslotId");
+                        .HasForeignKey("TimeslotId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Spinning.Models.Timeslot", b =>

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Spinning.Models
 {
+    [Table("Timeslots")]
     public class Timeslot
     {
-        [Required]
-        public int Id { get; set; }
+        
+        public int Id { get; set; }        
         public int RoomId { get; set; }
 
         [Required(ErrorMessage = "Date field can't be empty")]

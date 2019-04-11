@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spinning.Models.Data;
 
 namespace Spinning.Models.Migrations
 {
     [DbContext(typeof(SpinningDBContext))]
-    partial class SpinningDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190411193345_AddedPenalties")]
+    partial class AddedPenalties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

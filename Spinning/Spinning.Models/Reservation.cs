@@ -9,9 +9,7 @@ namespace Spinning.Models
     public class Reservation
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public int TimeslotId { get; set; }
-        public virtual SpinningUser SpinningUsers { get; set; }
+        public virtual SpinningUser SpinningUser { get; set; }
         public virtual Timeslot Timeslot { get; set; }
     }
 }

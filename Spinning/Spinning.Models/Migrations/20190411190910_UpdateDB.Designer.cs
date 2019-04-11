@@ -10,8 +10,8 @@ using Spinning.Models.Data;
 namespace Spinning.Models.Migrations
 {
     [DbContext(typeof(SpinningDBContext))]
-    [Migration("20190411153537_AddedUser")]
-    partial class AddedUser
+    [Migration("20190411190910_UpdateDB")]
+    partial class UpdateDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -141,8 +141,6 @@ namespace Spinning.Models.Migrations
 
                     b.Property<int>("TimeslotId");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("SpinningUsersId");
@@ -158,7 +156,7 @@ namespace Spinning.Models.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Bikes");
+                    b.Property<int>("BikeCount");
 
                     b.Property<int>("RoomNr");
 

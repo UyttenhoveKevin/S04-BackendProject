@@ -7,17 +7,19 @@ using System.Text;
 
 namespace Spinning.Models
 {
+    [Table("Rooms")]
     public class Room
     {
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         
         public int Id { get; set; }
 
+        [Range(0, 500, ErrorMessage = "Number of bikes must be between 0 and 50")]
         [DisplayName("Number of Bikes")]
         [Required(ErrorMessage = "BikeCount field can't be empty")]
         public int BikeCount { get; set; }
 
-        [Range(0, 50,ErrorMessage = "Room number must be between 0 and 50")]
+        [Range(0, 500,ErrorMessage = "Room number must be between 0 and 500")]
         [DisplayName("Room number")]
         [Required(ErrorMessage = "Room number field can't be empty")]
         public int RoomNr { get; set; }

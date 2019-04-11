@@ -4,32 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Spinning.Models.Migrations
 {
-    public partial class AddedUser : Migration
+    public partial class DeletingUserId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reservations_Users_UserId",
-                table: "Reservations");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Reservations_UserId",
-                table: "Reservations");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "UserId",
-                table: "Reservations",
-                nullable: true,
-                oldClrType: typeof(int));
-
-            migrationBuilder.AddColumn<string>(
-                name: "SpinningUsersId",
-                table: "Reservations",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -70,6 +48,20 @@ namespace Spinning.Models.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BikeCount = table.Column<int>(nullable: false),
+                    RoomNr = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,10 +170,51 @@ namespace Spinning.Models.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservations_SpinningUsersId",
-                table: "Reservations",
-                column: "SpinningUsersId");
+            migrationBuilder.CreateTable(
+                name: "Timeslots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RoomId = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Timeslots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Timeslots_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TimeslotId = table.Column<int>(nullable: false),
+                    SpinningUsersId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservations_AspNetUsers_SpinningUsersId",
+                        column: x => x.SpinningUsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reservations_Timeslots_TimeslotId",
+                        column: x => x.TimeslotId,
+                        principalTable: "Timeslots",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -222,21 +255,24 @@ namespace Spinning.Models.Migrations
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Reservations_AspNetUsers_SpinningUsersId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_SpinningUsersId",
                 table: "Reservations",
-                column: "SpinningUsersId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                column: "SpinningUsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_TimeslotId",
+                table: "Reservations",
+                column: "TimeslotId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Timeslots_RoomId",
+                table: "Timeslots",
+                column: "RoomId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Reservations_AspNetUsers_SpinningUsersId",
-                table: "Reservations");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -253,51 +289,19 @@ namespace Spinning.Models.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Reservations");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Reservations_SpinningUsersId",
-                table: "Reservations");
+            migrationBuilder.DropTable(
+                name: "Timeslots");
 
-            migrationBuilder.DropColumn(
-                name: "SpinningUsersId",
-                table: "Reservations");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "UserId",
-                table: "Reservations",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldNullable: true);
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservations_UserId",
-                table: "Reservations",
-                column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Reservations_Users_UserId",
-                table: "Reservations",
-                column: "UserId",
-                principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Rooms");
         }
     }
 }
