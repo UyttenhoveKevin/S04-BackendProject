@@ -14,7 +14,7 @@ namespace Spinning.Models
         
         public int Id { get; set; }
 
-        [Range(0, 500, ErrorMessage = "Number of bikes must be between 0 and 50")]
+        [Range(0, 50, ErrorMessage = "Number of bikes must be between 0 and 50")]
         [DisplayName("Number of Bikes")]
         [Required(ErrorMessage = "BikeCount field can't be empty")]
         public int BikeCount { get; set; }

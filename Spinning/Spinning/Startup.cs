@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spinning.Models.Data;
+using Spinning.Models.Repositories;
+
 namespace Spinning
 {
     public class Startup
@@ -35,6 +37,8 @@ namespace Spinning
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddScoped<IRoomRepository,RoomRepository>();
+            services.AddScoped<ITimeSlotRepository,TimeSlotRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

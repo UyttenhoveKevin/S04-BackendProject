@@ -17,6 +17,8 @@ namespace Spinning.Models
         public DateTime Date { get; set; }
         public virtual ICollection<Reservation> Reservations { get; set; }
 
+        public virtual Room Room { get; set; }
+
         public Timeslot()
         {
             Reservations = new HashSet<Reservation>();
