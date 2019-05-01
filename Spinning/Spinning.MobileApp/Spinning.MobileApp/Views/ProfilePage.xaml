@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:renderers="clr-namespace:Spinning.MobileApp.Renderers"
+             x:Class="Spinning.MobileApp.Views.ProfilePage">
+    <ContentPage.Content>
+        <StackLayout>           
+            <StackLayout>
+                <renderers:GradientLayout
+                ColorsList="#4F641E,#7EAA1B"
+                Mode="ToTopLeft">
+                    <StackLayout>                        
+                        <Frame Margin="0" BackgroundColor="White">
+                            <Image x:Name="LogoVipFit"></Image>
+                        </Frame>
+                            
+                        <Label Style="{StaticResource Title}"> Profiel</Label>
+                        <Frame Margin="20" VerticalOptions="CenterAndExpand">
+                            <StackLayout Margin="20">
+                                <Grid ColumnSpacing="0" RowSpacing="0" Margin="0" Padding="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Column="0" Grid.Row="0" Style="{StaticResource Default}">Naam:</Label>
+                                    <Entry Grid.Column="1" Grid.Row="0" Placeholder="Naam"></Entry>
+                                    <Label Grid.Column="0" Grid.Row="1" Style="{StaticResource Default}">Voornaam:</Label>
+                                    <Entry Grid.Column="1" Grid.Row="1" Placeholder="Voornaam"></Entry>
+                                    <Label Grid.Column="0" Grid.Row="2" Style="{StaticResource Default}">Email:</Label>
+                                    <Entry Grid.Column="1" Grid.Row="2" Placeholder="Email"></Entry>
+                                </Grid>
+                                <Grid ColumnSpacing="0" RowSpacing="0" Margin="0" Padding="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Margin="0,10,10,0" Grid.Column="0" BackgroundColor="{StaticResource Redcolor}" Text="Uitloggen"></Button>
+                                    <Button Margin="10,10,0,0" Grid.Column="1" Text="Opslaan"></Button>
+                                </Grid>
+                                
+                            </StackLayout>
+                        </Frame>
+                    </StackLayout>                    
+                </renderers:GradientLayout>  
+            </StackLayout>
+
+            <!--Footer-->
+            <StackLayout VerticalOptions="EndAndExpand"  BackgroundColor="{StaticResource Maincolor}">
+                <Grid Margin="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="ProfileIcon"></Image>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="HouseIcon"></Image>
+                    </StackLayout>
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="AddIcon"></Image>                       
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

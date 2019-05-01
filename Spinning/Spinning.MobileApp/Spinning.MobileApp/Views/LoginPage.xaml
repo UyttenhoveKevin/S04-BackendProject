@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:renderers="clr-namespace:Spinning.MobileApp.Renderers"
+             xmlns:local="clr-namespace:Spinning.MobileApp"
+             x:Class="Spinning.MobileApp.Views.LoginPage">
+
+    <StackLayout>
+        <renderers:GradientLayout
+            ColorsList="#4F641E,#7EAA1B"
+            Mode="ToTopLeft">
+            <StackLayout VerticalOptions="StartAndExpand" Margin="0,100,0,0">
+                <Frame>
+                    <StackLayout>
+                        <Image Margin="20" x:Name="LogoVipFit"></Image>
+                    </StackLayout>
+                </Frame>
+                <Frame>
+                    <StackLayout Margin="20" VerticalOptions="CenterAndExpand">
+                        <Entry FontFamily="{StaticResource NormalFont}" FontSize="Default" TextColor="{StaticResource Textcolor-light}" Placeholder="Email"></Entry>
+                        <Entry FontFamily="{StaticResource NormalFont}" FontSize="Default" TextColor="{StaticResource Textcolor-light}" Placeholder="Wachtwoord"></Entry>
+                        <Button Text="Login"></Button>
+                        <Label Margin="0,5,0,0" FontSize="Small" TextColor="{StaticResource Textcolor-light}" TextDecorations="Underline"> Geen account? Registreer je dan nu hier</Label>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </renderers:GradientLayout>
+    </StackLayout>
+
+</ContentPage>

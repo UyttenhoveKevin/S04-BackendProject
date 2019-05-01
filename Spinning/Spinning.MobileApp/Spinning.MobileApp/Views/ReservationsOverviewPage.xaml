@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:renderers="clr-namespace:Spinning.MobileApp.Renderers"
+             x:Class="Spinning.MobileApp.Views.ReservationsOverviewPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout>
+                <renderers:GradientLayout
+                ColorsList="#4F641E,#7EAA1B"
+                Mode="ToTopLeft">
+                    <StackLayout>
+                        <Frame Margin="0" BackgroundColor="White">
+                            <Image x:Name="LogoVipFit"></Image>
+                        </Frame>
+
+                        <Label Style="{StaticResource Title}">Reservaties</Label>
+                        <Frame Margin="20,0" VerticalOptions="CenterAndExpand">
+                            <StackLayout Margin="20">
+                                <Grid ColumnSpacing="0" RowSpacing="0" Margin="0" Padding="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <StackLayout Grid.Column="0" Orientation="Horizontal">
+                                        <Image HeightRequest="28" x:Name="LocationIcon"></Image>
+                                        <Label FontSize="Small" TextColor="{StaticResource Textcolor-light}" Style="{StaticResource Default}">203</Label>
+                                    </StackLayout>
+                                    <StackLayout  Grid.Column="1" Orientation="Horizontal">
+                                        <Image HeightRequest="28" x:Name="ClockIcon"></Image>
+                                        <Label FontSize="Small" TextColor="{StaticResource Textcolor-light}" Style="{StaticResource Default}">18:00</Label>
+                                    </StackLayout>
+                                    <StackLayout Grid.Column="2" Orientation="Horizontal">
+                                        <Image HeightRequest="28" x:Name="CalenderIcon"></Image>
+                                        <Label FontSize="Small" TextColor="{StaticResource Textcolor-light}" Style="{StaticResource Default}">20/01/2018</Label>
+                                    </StackLayout>
+                                </Grid>
+                                
+
+                            </StackLayout>
+                        </Frame>
+                    </StackLayout>
+                </renderers:GradientLayout>
+            </StackLayout>
+
+            <!--Footer-->
+            <StackLayout VerticalOptions="EndAndExpand"  BackgroundColor="{StaticResource Maincolor}">
+                <Grid Margin="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="ProfileIcon"></Image>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="HouseIcon"></Image>
+                    </StackLayout>
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image HeightRequest="28" x:Name="AddIcon"></Image>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

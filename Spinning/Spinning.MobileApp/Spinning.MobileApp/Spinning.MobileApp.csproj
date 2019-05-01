@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\AddIcon.png" />
+    <None Remove="Images\CalenderIcon.png" />
+    <None Remove="Images\ClockIcon.png" />
+    <None Remove="Images\HouseIcon.png" />
+    <None Remove="Images\LocationIcon.png" />
+    <None Remove="Images\LogoVipFit.jpg" />
+    <None Remove="Images\LogoVipFit2.jpg" />
+    <None Remove="Images\ProfileIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\AddIcon.png" />
+    <EmbeddedResource Include="Images\CalenderIcon.png" />
+    <EmbeddedResource Include="Images\ClockIcon.png" />
+    <EmbeddedResource Include="Images\HouseIcon.png" />
+    <EmbeddedResource Include="Images\LocationIcon.png" />
+    <EmbeddedResource Include="Images\ProfileIcon.png" />
+    <EmbeddedResource Include="Images\LogoVipFit.jpg" />
+    <EmbeddedResource Include="Images\LogoVipFit2.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Views\AddReservationPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ProfilePage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ReservationsOverviewPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
