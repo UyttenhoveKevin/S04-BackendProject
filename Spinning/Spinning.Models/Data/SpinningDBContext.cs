@@ -8,6 +8,11 @@ namespace Spinning.Models.Data
 {
     public class SpinningDBContext:IdentityDbContext<SpinningUser>
     {
+
+        public SpinningDBContext()
+        {
+
+        }
         public SpinningDBContext(DbContextOptions options) : base(options)
         {
 

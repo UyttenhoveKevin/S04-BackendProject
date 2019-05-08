@@ -14,6 +14,7 @@ namespace Spinning.Models
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }        
 
+
         public virtual ICollection<Reservation> Reservations { get; set; }
         public virtual ICollection<Penalty> Penalties { get; set; }
 

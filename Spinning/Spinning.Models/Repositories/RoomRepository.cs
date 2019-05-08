@@ -29,13 +29,13 @@ namespace Spinning.Models.Repositories
         public async Task<List<Room>> GetAllAsync()
         {
 
-            return await _context.Rooms.ToListAsync();
+            return await _context.Rooms.Include(r=>r.Timeslots).ToListAsync();
 
         }
 
         public async Task<Room> GetByIdAsync(int id)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+            return await _context.Rooms.Include(r => r.Timeslots).FirstOrDefaultAsync(r => r.Id == id);
         }
 
         
