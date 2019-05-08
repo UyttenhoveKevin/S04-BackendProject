@@ -65,11 +65,19 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
-            if (ModelState.IsValid)
+            //controleer als timeslot al bestaad
+            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
+            
+            if(CheckTimeSlot.Count() == 0)
             {
-                await _TimeslotRepository.CreateAsync(timeslot);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await _TimeslotRepository.CreateAsync(timeslot);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(timeslot);
             }
+            ViewBag.ExistsError = "Timeslot already exists";
             return View(timeslot);
         }
 
@@ -98,30 +106,40 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
-            if (id != timeslot.Id)
-            {
-                return NotFound();
-            }
+            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
 
-            if (ModelState.IsValid)
+            if (CheckTimeSlot.Count() == 0)
             {
-                try
+                if (id != timeslot.Id)
                 {
-                    await _TimeslotRepository.EditAsync(timeslot);
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!_TimeslotRepository.TimeslotExist(timeslot.Id))
+                    try
                     {
-                        return NotFound();
+                        await _TimeslotRepository.EditAsync(timeslot);
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!_TimeslotRepository.TimeslotExist(timeslot.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(timeslot);
             }
+            var timeslotdata = await _context.Rooms.ToListAsync();
+            ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
+            ViewBag.ExistsError = "Timeslot already exists";
             return View(timeslot);
         }
 

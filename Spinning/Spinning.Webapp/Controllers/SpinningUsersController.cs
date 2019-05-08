@@ -63,7 +63,7 @@ namespace Spinning.WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SpinningUser spinningUser)
-        {
+        {            
             if (ModelState.IsValid)
             {
                 _context.Add(spinningUser);

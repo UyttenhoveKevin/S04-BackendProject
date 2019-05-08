@@ -16,10 +16,13 @@ namespace Spinning.WebApp.Controllers
 
     public class RoomsController : Controller
     {
+        private readonly SpinningDBContext _context;
         private readonly IRoomRepository _roomRepository;
 
-        public RoomsController(IRoomRepository roomRepository)
+
+        public RoomsController(IRoomRepository roomRepository, SpinningDBContext context)
         {
+            _context = context;
             _roomRepository = roomRepository;
         }
 
@@ -59,15 +62,26 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,BikeCount,RoomNr")] Room room)
         {
-            if (ModelState.IsValid)
-            {
-                
-                await _roomRepository.CreateAsync(room);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(room);
-        }
+            //var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
 
+            //if (CheckTimeSlot.Count() == 0)
+            //{
+            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
+
+            if (CheckRoom.Count == 0)
+            {
+                if (ModelState.IsValid)
+                {
+                    await _roomRepository.CreateAsync(room);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(room);
+            }
+
+            ViewBag.ExistsError = "Room already exists";
+            return View(room);
+
+        }
         // GET: Rooms/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -91,30 +105,37 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,BikeCount,RoomNr")] Room room)
         {
-            if (id != room.Id)
+            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
+            if (CheckRoom.Count == 0)
             {
-                return NotFound();
+                if (id != room.Id)
+                {
+                    return NotFound();
+                }
+
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        await _roomRepository.EditAsync(room);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!_roomRepository.RoomExists(room.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(room);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _roomRepository.EditAsync(room);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_roomRepository.RoomExists(room.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+            ViewBag.ExistsError = "Room already exists";
             return View(room);
         }
 
@@ -142,10 +163,10 @@ namespace Spinning.WebApp.Controllers
         {
             var room = await _roomRepository.GetByIdAsync(id);
             await _roomRepository.RemoveAsync(room);
-            
+
             return RedirectToAction(nameof(Index));
         }
 
-        
+
     }
 }
