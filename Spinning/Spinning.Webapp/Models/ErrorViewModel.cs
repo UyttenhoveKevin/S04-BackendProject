@@ -1,6 +1,6 @@
 using System;
 
-namespace Spinning.Webapp.Models
+namespace Spinning.WebApp.Models
 {
     public class ErrorViewModel
     {

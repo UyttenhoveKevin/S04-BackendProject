@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Spinning.Webapp.Models;
+using Spinning.WebApp.Models;
 
-namespace Spinning.Webapp.Controllers
+namespace Spinning.WebApp.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class HomeController : Controller
     {
         public IActionResult Index()
