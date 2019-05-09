@@ -16,13 +16,13 @@ namespace Spinning.WebApp.Controllers
 
     public class RoomsController : Controller
     {
-        private readonly SpinningDBContext _context;
+
         private readonly IRoomRepository _roomRepository;
 
 
-        public RoomsController(IRoomRepository roomRepository, SpinningDBContext context)
+        public RoomsController(IRoomRepository roomRepository)
         {
-            _context = context;
+
             _roomRepository = roomRepository;
         }
 
@@ -66,7 +66,7 @@ namespace Spinning.WebApp.Controllers
 
             //if (CheckTimeSlot.Count() == 0)
             //{
-            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
+            List<Room> CheckRoom = await _roomRepository.CheckIfRoomExists(room);
 
             if (CheckRoom.Count == 0)
             {
@@ -105,8 +105,7 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,BikeCount,RoomNr")] Room room)
         {
-            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
-            if (CheckRoom.Count == 0)
+            if (_roomRepository.RoomExists(room) == false)
             {
                 if (id != room.Id)
                 {
@@ -121,7 +120,7 @@ namespace Spinning.WebApp.Controllers
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!_roomRepository.RoomExists(room.Id))
+                        if (!_roomRepository.RoomExists(room))
                         {
                             return NotFound();
                         }
@@ -134,9 +133,10 @@ namespace Spinning.WebApp.Controllers
                 }
                 return View(room);
             }
-
-            ViewBag.ExistsError = "Room already exists";
+            ViewBag.ExistsError = "room already exists";
             return View(room);
+
+
         }
 
         //// GET: Rooms/Delete/5

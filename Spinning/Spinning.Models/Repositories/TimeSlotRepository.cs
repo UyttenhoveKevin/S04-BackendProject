@@ -16,6 +16,11 @@ namespace Spinning.Models.Repositories
             _context = context;
         }
 
+        public async Task<List<Timeslot>> CheckTimeslot(Timeslot timeslot)
+        {
+            return await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
+        }
+
         public async Task<Timeslot> CreateAsync(Timeslot timeslot)
         {
             await _context.AddAsync(timeslot);
@@ -51,15 +56,21 @@ namespace Spinning.Models.Repositories
             return await _context.Timeslots.Include(t=>t.Room).FirstOrDefaultAsync(t => t.Id == id);
         }
 
+        public async Task<List<Room>> GetTimeSlotData()
+        {
+            return await _context.Rooms.ToListAsync();
+        }
+
         public async Task RemoveAsync(Timeslot timeslot)
         {
             _context.Timeslots.Remove(timeslot);
             await _context.SaveChangesAsync();
         }
 
-        public bool TimeslotExist(int id)
+        public bool TimeslotExist(Timeslot timeslot)
         {
-            return _context.Rooms.Any(t => t.Id == id);
-        }
+
+            return _context.Timeslots.Any(t => t.RoomId == timeslot.RoomId && t.Date == timeslot.Date);
+        } 
     }
 }

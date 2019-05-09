@@ -85,7 +85,7 @@ namespace Spinning.WebApp
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=SpinningUsers}/{action=Index}/{id?}");
             });
 
             SeedDatabase.Initialize(context, userManager, roleManager).Wait();

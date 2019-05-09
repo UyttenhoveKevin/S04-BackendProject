@@ -17,11 +17,10 @@ namespace Spinning.WebApp.Controllers
     public class TimeslotsController : Controller
     {
         private readonly ITimeSlotRepository _TimeslotRepository;
-        private readonly SpinningDBContext _context;
 
         public TimeslotsController(ITimeSlotRepository timeSlotRepository, SpinningDBContext context)
         {
-            _context = context;
+            
             _TimeslotRepository = timeSlotRepository;
         }
 
@@ -53,7 +52,7 @@ namespace Spinning.WebApp.Controllers
         // GET: Timeslots/Create
         public async Task<IActionResult> Create()
         {
-            var timeslotdata = await _context.Rooms.ToListAsync();
+            List<Room> timeslotdata = await _TimeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             return View();
         }
@@ -66,9 +65,8 @@ namespace Spinning.WebApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
             //controleer als timeslot al bestaad
-            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
-            
-            if(CheckTimeSlot.Count() == 0)
+            var checktimeslot = await _TimeslotRepository.CheckTimeslot(timeslot);
+            if(checktimeslot.Count == 0)
             {
                 if (ModelState.IsValid)
                 {
@@ -94,7 +92,8 @@ namespace Spinning.WebApp.Controllers
             {
                 return NotFound();
             }
-            var timeslotdata = await _context.Rooms.ToListAsync();
+            //var timeslotdata = await _context.Rooms.ToListAsync();
+            var timeslotdata = await _TimeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             return View(timeslot);
         }
@@ -106,7 +105,7 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
-            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
+            var CheckTimeSlot = await _TimeslotRepository.CheckTimeslot(timeslot);
 
             if (CheckTimeSlot.Count() == 0)
             {
@@ -123,7 +122,7 @@ namespace Spinning.WebApp.Controllers
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!_TimeslotRepository.TimeslotExist(timeslot.Id))
+                        if (!_TimeslotRepository.TimeslotExist(timeslot))
                         {
                             return NotFound();
                         }
@@ -137,7 +136,7 @@ namespace Spinning.WebApp.Controllers
                 }
                 return View(timeslot);
             }
-            var timeslotdata = await _context.Rooms.ToListAsync();
+            var timeslotdata = await _TimeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             ViewBag.ExistsError = "Timeslot already exists";
             return View(timeslot);

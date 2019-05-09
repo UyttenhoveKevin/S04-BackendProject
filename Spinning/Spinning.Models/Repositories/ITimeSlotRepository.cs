@@ -10,7 +10,9 @@ namespace Spinning.Models.Repositories
         Task RemoveAsync(Timeslot timeslot);
         Task <Timeslot> CreateAsync(Timeslot timeslot);
         Task EditAsync(Timeslot timeslot);
-        bool TimeslotExist(int id);
+        bool TimeslotExist(Timeslot timeslot);
         Task<IEnumerable<int>> GetAllRoomNrs();
+        Task<List<Room>> GetTimeSlotData();
+        Task<List<Timeslot>> CheckTimeslot(Timeslot timeslot);
     }
 }

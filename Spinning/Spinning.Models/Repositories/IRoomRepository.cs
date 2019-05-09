@@ -10,7 +10,8 @@ namespace Spinning.Models.Repositories
         Task<Room> CreateAsync(Room room);
         Task EditAsync(Room room);
         Task RemoveAsync(Room room);
-        bool RoomExists(int id);
+        bool RoomExists(Room room);
         Task<List<int>> GetRoomNrs();
+        Task<List<Room>> CheckIfRoomExists(Room room);
     }
 }

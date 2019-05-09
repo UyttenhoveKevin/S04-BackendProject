@@ -46,9 +46,9 @@ namespace Spinning.Models.Repositories
             await _context.SaveChangesAsync();            
         }
 
-        public bool RoomExists(int id)
+        public bool RoomExists(Room room)
         {
-            return _context.Rooms.Any(e => e.Id == id);
+            return _context.Rooms.Any(r => r.RoomNr == room.RoomNr);
         }
 
 
@@ -71,6 +71,11 @@ namespace Spinning.Models.Repositories
                 roomNrs.Add(room.RoomNr);
             }
             return roomNrs;
+        }
+
+        public async Task<List<Room>> CheckIfRoomExists(Room room)
+        {
+            return await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
         }
     }
 }

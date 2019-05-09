@@ -70,6 +70,7 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TimeSlotId,SpinningUserId")] Reservation reservation)
         {
+            
             if (ModelState.IsValid)
             {
                 _context.Add(reservation);
