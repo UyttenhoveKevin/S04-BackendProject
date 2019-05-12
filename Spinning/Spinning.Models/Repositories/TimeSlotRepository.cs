@@ -70,7 +70,8 @@ namespace Spinning.Models.Repositories
 
         public bool TimeslotExist(Timeslot timeslot)
         {
+
             return _context.Timeslots.Any(t => t.RoomId == timeslot.RoomId && t.Date == timeslot.Date);
-        }
+        } 
     }
 }
