@@ -13,24 +13,20 @@ using Spinning.Models.Repositories;
 namespace Spinning.WebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-
     public class TimeslotsController : Controller
     {
-        private readonly ITimeSlotRepository _TimeslotRepository;
-        private readonly SpinningDBContext _context;
+        private readonly ITimeSlotRepository _timeslotRepository;
 
-        public TimeslotsController(ITimeSlotRepository timeSlotRepository, SpinningDBContext context)
+        public TimeslotsController(ITimeSlotRepository timeSlotRepository)
         {
-            _context = context;
-            _TimeslotRepository = timeSlotRepository;
+            _timeslotRepository = timeSlotRepository;
         }
-
 
 
         // GET: Timeslots
         public async Task<IActionResult> Index()
         {
-            return View(await _TimeslotRepository.GetAllAsync());
+            return View(await _timeslotRepository.GetAllAsync());
         }
 
         // GET: Timeslots/Details/5
@@ -41,7 +37,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var timeslot = await _TimeslotRepository.GetByIdAsync(id.GetValueOrDefault());
+            Timeslot timeslot = await _timeslotRepository.GetByIdAsync(id.GetValueOrDefault());
             if (timeslot == null)
             {
                 return NotFound();
@@ -53,7 +49,7 @@ namespace Spinning.WebApp.Controllers
         // GET: Timeslots/Create
         public async Task<IActionResult> Create()
         {
-            var timeslotdata = await _context.Rooms.ToListAsync();
+            List<Room> timeslotdata = await _timeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             return View();
         }
@@ -66,18 +62,21 @@ namespace Spinning.WebApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
             //controleer als timeslot al bestaad
-            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
-            
-            if(CheckTimeSlot.Count() == 0)
+            List<Timeslot> checktimeslot = await _timeslotRepository.CheckTimeslot(timeslot);
+            if (checktimeslot.Count == 0)
             {
                 if (ModelState.IsValid)
                 {
-                    await _TimeslotRepository.CreateAsync(timeslot);
+                    await _timeslotRepository.CreateAsync(timeslot);
                     return RedirectToAction(nameof(Index));
                 }
+
                 return View(timeslot);
             }
+
             ViewBag.ExistsError = "Timeslot already exists";
+            List<Room> timeslotdata = await _timeslotRepository.GetTimeSlotData();
+            ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             return View(timeslot);
         }
 
@@ -89,12 +88,14 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var timeslot = await _TimeslotRepository.GetByIdAsync(id.GetValueOrDefault());
+            Timeslot timeslot = await _timeslotRepository.GetByIdAsync(id.GetValueOrDefault());
             if (timeslot == null)
             {
                 return NotFound();
             }
-            var timeslotdata = await _context.Rooms.ToListAsync();
+
+            //var timeslotdata = await _context.Rooms.ToListAsync();
+            List<Room> timeslotdata = await _timeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             return View(timeslot);
         }
@@ -106,9 +107,9 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,RoomId,Date")] Timeslot timeslot)
         {
-            var CheckTimeSlot = await _context.Timeslots.Where(t => t.Date == timeslot.Date && t.RoomId == timeslot.RoomId).ToListAsync();
+            
 
-            if (CheckTimeSlot.Count() == 0)
+            if (_timeslotRepository.TimeslotExist(timeslot) == false)
             {
                 if (id != timeslot.Id)
                 {
@@ -119,11 +120,11 @@ namespace Spinning.WebApp.Controllers
                 {
                     try
                     {
-                        await _TimeslotRepository.EditAsync(timeslot);
+                        await _timeslotRepository.EditAsync(timeslot);
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!_TimeslotRepository.TimeslotExist(timeslot.Id))
+                        if (!_timeslotRepository.TimeslotExist(timeslot))
                         {
                             return NotFound();
                         }
@@ -135,9 +136,11 @@ namespace Spinning.WebApp.Controllers
 
                     return RedirectToAction(nameof(Index));
                 }
+
                 return View(timeslot);
             }
-            var timeslotdata = await _context.Rooms.ToListAsync();
+
+            List<Room> timeslotdata = await _timeslotRepository.GetTimeSlotData();
             ViewData["RoomNr"] = new SelectList(timeslotdata, "Id", "RoomNr");
             ViewBag.ExistsError = "Timeslot already exists";
             return View(timeslot);
@@ -151,7 +154,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var timeslot = await _TimeslotRepository.GetByIdAsync(id.GetValueOrDefault());
+            Timeslot timeslot = await _timeslotRepository.GetByIdAsync(id.GetValueOrDefault());
             if (timeslot == null)
             {
                 return NotFound();
@@ -165,11 +168,9 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var timeslot = await _TimeslotRepository.GetByIdAsync(id);
-            await _TimeslotRepository.RemoveAsync(timeslot);
+            Timeslot timeslot = await _timeslotRepository.GetByIdAsync(id);
+            await _timeslotRepository.RemoveAsync(timeslot);
             return RedirectToAction(nameof(Index));
         }
-
-        
     }
 }

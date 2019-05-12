@@ -38,6 +38,8 @@ namespace Spinning.API
 
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<ITimeSlotRepository, TimeSlotRepository>();
+            services.AddScoped<IPenaltyRepository, PenaltyRepository>();
+            services.AddScoped<IReservationRepository, ReservationRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddIdentity<SpinningUser, IdentityRole>(options =>
             {

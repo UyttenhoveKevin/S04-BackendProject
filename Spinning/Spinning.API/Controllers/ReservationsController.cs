@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Spinning.API.DTOs;
 using Spinning.Models;
 using Spinning.Models.Data;
+using Spinning.Models.Repositories;
 
 namespace Spinning.API.Controllers
 {
@@ -18,19 +19,21 @@ namespace Spinning.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly SpinningDBContext _context;
+        private readonly IReservationRepository _reservationRepository;
 
-        public ReservationsController(SpinningDBContext context, IMapper mapper)
+        public ReservationsController(SpinningDBContext context, IMapper mapper, IReservationRepository reservationRepository)
         {
             _context = context;
             _mapper = mapper;
+            _reservationRepository = reservationRepository;
         }
 
         // GET: api/Reservations
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reservation_DTO>>> GetReservations()
         {
-            var list = await _context.Reservations.Include(r=>r.Timeslot).ToListAsync();
-            var listDTO = list.Select(r => _mapper.Map<Reservation_DTO>(r)).ToList();
+            List<Reservation> list = await _reservationRepository.GetAllAsync();
+            List<Reservation_DTO> listDTO = list.Select(r => _mapper.Map<Reservation_DTO>(r)).ToList();
             return listDTO;
         }
 
@@ -38,7 +41,7 @@ namespace Spinning.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Reservation_DTO>> GetReservation(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
+            Reservation reservation = await _reservationRepository.GetByIdAsync(id);
 
             if (reservation == null)
             {
@@ -47,26 +50,22 @@ namespace Spinning.API.Controllers
 
             var reservationDTO = _mapper.Map<Reservation_DTO>(reservation);
             return reservationDTO;
-        } 
+        }
 
 
         // GET: api/Reservations/{GUID}
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<IEnumerable<Reservation_DTO>>> GetReservationsForUserId(string id)
         {
-            var reservation = await _context.Reservations.Include(r => r.Timeslot).ThenInclude(t=>t.Room).Where(r => r.SpinningUser.Id == id).ToListAsync();
-            
-            if (reservation == null)
+            List<Reservation> reservations = await _context.Reservations.Where(r => r.SpinningUser.Id == id).ToListAsync();
+            if (reservations == null)
             {
                 return NotFound();
             }
 
-            var list = await _context.Reservations.Where(r => r.SpinningUser.Id == id).ToListAsync();
-            var listDTO = list.Select(r => _mapper.Map<Reservation_DTO>(r)).ToList();
+            List<Reservation_DTO> listDTO = reservations.Select(r => _mapper.Map<Reservation_DTO>(r)).ToList();
             return listDTO;
-
-            //var reservationDTO = _mapper.Map<Reservation_DTO>(reservation);
-            //return reservation;
+            
         }
 
         //// PUT: api/Reservations/5
@@ -101,35 +100,36 @@ namespace Spinning.API.Controllers
 
         // POST: api/Reservations
         [HttpPost]
-        public async Task<ActionResult<Reservation_DTO>> PostReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation_DTO>> PostReservation(Reservation_DTO reservationDto)
         {
-            
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReservation", new { id = reservation.Id }, reservation);
+            try
+            {
+                var reservation = _mapper.Map<Reservation>(reservationDto);
+                await _reservationRepository.CreateAsync(reservation);
+                return CreatedAtAction("GetReservation", new {id = reservation.Id}, reservation);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         // DELETE: api/Reservations
         // Delete zonder gebruik te maken van Reservation Id
         [HttpDelete]
-        public async Task<ActionResult<Reservation_DTO>> DeleteReservation(Reservation_DTO reservation_DTO)
+        public async Task<ActionResult<Reservation_DTO>> DeleteReservation(Reservation_DTO reservationDto)
         {
-            var reservation =await  _context.Reservations.FirstOrDefaultAsync(r => r.SpinningUserId == reservation_DTO.SpinningUserId && r.TimeSlotId == reservation_DTO.TimeSlotId);
+            Reservation reservation = await _context.Reservations.FirstOrDefaultAsync(r =>
+                r.SpinningUserId == reservationDto.SpinningUserId && r.TimeSlotId == reservationDto.TimeSlotId);
+
             if (reservation == null)
             {
                 return NotFound();
             }
 
-            _context.Reservations.Remove(reservation);
-            await _context.SaveChangesAsync();
+            await _reservationRepository.RemoveAsync(reservation);
 
-            return reservation_DTO;
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
+            return reservationDto;
         }
     }
 }

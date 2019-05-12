@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 namespace Spinning.Models.Repositories
 {
     public class RoomRepository : IRoomRepository
-    { 
+    {
         private readonly SpinningDBContext _context;
+
         public RoomRepository(SpinningDBContext context)
         {
             _context = context;
@@ -18,19 +19,16 @@ namespace Spinning.Models.Repositories
 
 
         public async Task<Room> CreateAsync(Room room)
-        {            
+        {
             await _context.AddAsync(room);
             await _context.SaveChangesAsync();
             return room;
         }
 
-        
 
         public async Task<List<Room>> GetAllAsync()
         {
-
-            return await _context.Rooms.Include(r=>r.Timeslots).ToListAsync();
-
+            return await _context.Rooms.Include(r => r.Timeslots).ToListAsync();
         }
 
         public async Task<Room> GetByIdAsync(int id)
@@ -38,20 +36,17 @@ namespace Spinning.Models.Repositories
             return await _context.Rooms.Include(r => r.Timeslots).FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        
 
         public async Task RemoveAsync(Room room)
-        {            
-            _context.Rooms.Remove(room);
-            await _context.SaveChangesAsync();            
-        }
-
-        public bool RoomExists(int id)
         {
-            return _context.Rooms.Any(e => e.Id == id);
+            _context.Rooms.Remove(room);
+            await _context.SaveChangesAsync();
         }
 
-
+        public bool RoomExists(Room room)
+        {
+            return _context.Rooms.Any(r => r.RoomNr == room.RoomNr);
+        }
 
 
         public async Task EditAsync(Room room)
@@ -66,11 +61,17 @@ namespace Spinning.Models.Repositories
         {
             var roomNrs = new List<int>();
             var rooms = _context.Rooms;
-            foreach ( var room in rooms)
+            foreach (var room in rooms)
             {
                 roomNrs.Add(room.RoomNr);
             }
+
             return roomNrs;
+        }
+
+        public async Task<List<Room>> CheckIfRoomExists(Room room)
+        {
+            return await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
         }
     }
 }

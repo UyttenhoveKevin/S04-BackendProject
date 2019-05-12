@@ -1,0 +1,42 @@
+﻿@model Spinning.Models.Penalty
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Penalty</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartdatePenalty)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartdatePenalty)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EnddatePenalty)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EnddatePenalty)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SpinningUser.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SpinningUser.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SpinningUser.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SpinningUser.UserName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

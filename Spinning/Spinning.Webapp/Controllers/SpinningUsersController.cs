@@ -13,7 +13,6 @@ using Spinning.Models.Data;
 namespace Spinning.WebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-
     public class SpinningUsersController : Controller
     {
         private readonly SpinningDBContext _context;
@@ -41,7 +40,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var spinningUser = await _context.SpinningUsers
+            SpinningUser spinningUser = await _context.SpinningUsers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (spinningUser == null)
             {
@@ -63,13 +62,14 @@ namespace Spinning.WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SpinningUser spinningUser)
-        {            
+        {
             if (ModelState.IsValid)
             {
                 _context.Add(spinningUser);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(spinningUser);
         }
 
@@ -81,11 +81,12 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var spinningUser = await _context.SpinningUsers.FindAsync(id);
+            SpinningUser spinningUser = await _context.SpinningUsers.FindAsync(id);
             if (spinningUser == null)
             {
                 return NotFound();
             }
+
             return View(spinningUser);
         }
 
@@ -94,7 +95,7 @@ namespace Spinning.WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id,  SpinningUser spinningUser)
+        public async Task<IActionResult> Edit(string id, SpinningUser spinningUser)
         {
             if (id != spinningUser.Id)
             {
@@ -103,9 +104,9 @@ namespace Spinning.WebApp.Controllers
 
             try
             {
-                var userInDb = await _context.SpinningUsers.FirstOrDefaultAsync(e => e.Id == id);
+                SpinningUser userInDb = await _context.SpinningUsers.FirstOrDefaultAsync(e => e.Id == id);
                 IList<string> roles = await _userManager.GetRolesAsync(userInDb);
-                await _userManager.RemoveFromRolesAsync(userInDb, roles);           
+                await _userManager.RemoveFromRolesAsync(userInDb, roles);
 
                 userInDb.AccessFailedCount = spinningUser.AccessFailedCount;
                 userInDb.Email = spinningUser.Email;
@@ -119,7 +120,6 @@ namespace Spinning.WebApp.Controllers
 
                 await _userManager.UpdateAsync(userInDb);
                 await _context.SaveChangesAsync();
-
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -143,7 +143,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var spinningUser = await _context.SpinningUsers
+            SpinningUser spinningUser = await _context.SpinningUsers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (spinningUser == null)
             {
@@ -158,7 +158,7 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var spinningUser = await _context.SpinningUsers.FindAsync(id);
+            SpinningUser spinningUser = await _context.SpinningUsers.FindAsync(id);
             _context.SpinningUsers.Remove(spinningUser);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

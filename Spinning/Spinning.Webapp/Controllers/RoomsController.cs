@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Spinning.Models;
 using Spinning.Models.Data;
 using Spinning.Models.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Spinning.WebApp.Controllers
 {
@@ -16,37 +17,58 @@ namespace Spinning.WebApp.Controllers
 
     public class RoomsController : Controller
     {
-        private readonly SpinningDBContext _context;
+
+        private readonly ILogger _logger;
         private readonly IRoomRepository _roomRepository;
 
 
-        public RoomsController(IRoomRepository roomRepository, SpinningDBContext context)
+        public RoomsController(IRoomRepository roomRepository, ILogger<RoomsController> logger)
         {
-            _context = context;
+            _logger = logger;
             _roomRepository = roomRepository;
         }
 
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-            return View(await _roomRepository.GetAllAsync());
+            try
+            {
+                
+                return View(await _roomRepository.GetAllAsync());
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exeption: {ex}");
+                throw;
+            }
+            
         }
 
         // GET: Rooms/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var room = await _roomRepository.GetByIdAsync(id.GetValueOrDefault());
-            if (room == null)
+                var room = await _roomRepository.GetByIdAsync(id.GetValueOrDefault());
+                if (room == null)
+                {
+                    return NotFound();
+                }
+
+                return View(room);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Get details exeption: {ex}");
+                throw;
             }
-
-            return View(room);
+            
         }
 
         // GET: Rooms/Create
@@ -66,7 +88,7 @@ namespace Spinning.WebApp.Controllers
 
             //if (CheckTimeSlot.Count() == 0)
             //{
-            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
+            List<Room> CheckRoom = await _roomRepository.CheckIfRoomExists(room);
 
             if (CheckRoom.Count == 0)
             {
@@ -105,8 +127,7 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,BikeCount,RoomNr")] Room room)
         {
-            var CheckRoom = await _context.Rooms.Where(r => r.RoomNr == room.RoomNr).ToListAsync();
-            if (CheckRoom.Count == 0)
+            if (_roomRepository.RoomExists(room) == false)
             {
                 if (id != room.Id)
                 {
@@ -121,7 +142,7 @@ namespace Spinning.WebApp.Controllers
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!_roomRepository.RoomExists(room.Id))
+                        if (!_roomRepository.RoomExists(room))
                         {
                             return NotFound();
                         }
@@ -134,9 +155,10 @@ namespace Spinning.WebApp.Controllers
                 }
                 return View(room);
             }
-
-            ViewBag.ExistsError = "Room already exists";
+            ViewBag.ExistsError = "room already exists";
             return View(room);
+
+
         }
 
         //// GET: Rooms/Delete/5

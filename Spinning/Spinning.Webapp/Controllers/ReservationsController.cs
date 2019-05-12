@@ -8,25 +8,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Spinning.Models;
 using Spinning.Models.Data;
+using Spinning.Models.Repositories;
 
 namespace Spinning.WebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-
     public class ReservationsController : Controller
     {
         private readonly SpinningDBContext _context;
+        private readonly IReservationRepository _reservationRepository;
 
-        public ReservationsController(SpinningDBContext context)
+        public ReservationsController(SpinningDBContext context, IReservationRepository reservationRepository)
         {
             _context = context;
+            _reservationRepository = reservationRepository;
         }
 
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var spinningDBContext = _context.Reservations.Include(r => r.SpinningUser).Include(r => r.Timeslot).ThenInclude(t=>t.Room);
-            return View(await spinningDBContext.ToListAsync());
+            List<Reservation> reservations = await _reservationRepository.GetAllAsync();
+            return View(reservations);
         }
 
         // GET: Reservations/Details/5
@@ -37,10 +39,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations
-                .Include(r => r.SpinningUser)
-                .Include(r => r.Timeslot)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Reservation reservation = await _reservationRepository.GetByIdAsync(id.Value);
             if (reservation == null)
             {
                 return NotFound();
@@ -56,7 +55,7 @@ namespace Spinning.WebApp.Controllers
             var timeslotViewData = _context.Timeslots.Select(t => new
             {
                 t.Id,
-                NameDisplay = "Room: " + t.Room.RoomNr + " on: " + t.Date.ToShortDateString() +" "+ t.Date.ToShortTimeString()
+                NameDisplay = "Room: " + t.Room.RoomNr + " on: " + t.Date.ToShortDateString() + " " + t.Date.ToShortTimeString()
             });
             ViewData["TimeSlotId"] = new SelectList(timeslotViewData, "Id", "NameDisplay");
 
@@ -72,10 +71,10 @@ namespace Spinning.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(reservation);
-                await _context.SaveChangesAsync();
+                await _reservationRepository.CreateAsync(reservation);
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["SpinningUserId"] = new SelectList(_context.SpinningUsers, "Id", "Id", reservation.SpinningUserId);
             ViewData["TimeSlotId"] = new SelectList(_context.Timeslots, "Id", "Id", reservation.TimeSlotId);
             return View(reservation);
@@ -89,7 +88,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations.FindAsync(id);
+            Reservation reservation = await _reservationRepository.GetByIdAsync(id.Value);
             if (reservation == null)
             {
                 return NotFound();
@@ -122,12 +121,11 @@ namespace Spinning.WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(reservation);
-                    await _context.SaveChangesAsync();
+                    await _reservationRepository.EditAsync(reservation);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReservationExists(reservation.Id))
+                    if (_reservationRepository.ReservationExist(reservation))
                     {
                         return NotFound();
                     }
@@ -136,8 +134,10 @@ namespace Spinning.WebApp.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["SpinningUserId"] = new SelectList(_context.SpinningUsers, "Id", "Id", reservation.SpinningUserId);
             ViewData["TimeSlotId"] = new SelectList(_context.Timeslots, "Id", "Id", reservation.TimeSlotId);
             return View(reservation);
@@ -151,10 +151,7 @@ namespace Spinning.WebApp.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations
-                .Include(r => r.SpinningUser)
-                .Include(r => r.Timeslot)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Reservation reservation = await _reservationRepository.GetByIdAsync(id.Value);
             if (reservation == null)
             {
                 return NotFound();
@@ -168,15 +165,9 @@ namespace Spinning.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
-            _context.Reservations.Remove(reservation);
-            await _context.SaveChangesAsync();
+            Reservation reservation = await _reservationRepository.GetByIdAsync(id);
+            await _reservationRepository.RemoveAsync(reservation);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
         }
     }
 }

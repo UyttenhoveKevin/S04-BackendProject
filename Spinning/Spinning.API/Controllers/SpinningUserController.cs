@@ -18,20 +18,16 @@ namespace Spinning.API.Controllers
     [ApiController]
     public class SpinningUserController : ControllerBase
     {
-        private readonly SpinningDBContext _context;
-        private readonly IMapper _mapper;
         private readonly UserManager<SpinningUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public SpinningUserController(SpinningDBContext context, IMapper mapper, UserManager<SpinningUser> userManager, RoleManager<IdentityRole> roleManager)
+        public SpinningUserController(UserManager<SpinningUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            _context = context;
-            _mapper = mapper;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
-        //Post : api/SpinningUser
+        //Post : api/SpinningUser/Register
         [HttpPost("Register")]
         public async Task<ActionResult<User_DTO>> RegisterUser(User_DTO user_DTO)
         {
@@ -45,28 +41,48 @@ namespace Spinning.API.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddPasswordAsync(user, user_DTO.Password);
+                await _userManager.AddToRoleAsync(user, "User");
                 return user_DTO;
             }
 
             return BadRequest();
         }
-        // Post: api/SpinningUser
+        // Post: api/SpinningUser/Login
 
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> LoginUser(User_DTO user_DTO)
         {
-            SpinningUser userFromDB = await _userManager.FindByEmailAsync(user_DTO.Email);
-            if (userFromDB != null)
+            SpinningUser userFromDb = await _userManager.FindByEmailAsync(user_DTO.Email);
+            if (userFromDb != null)
             {
-                var passwordValid = await _userManager.CheckPasswordAsync(userFromDB, user_DTO.Password);
+                bool passwordValid = await _userManager.CheckPasswordAsync(userFromDb, user_DTO.Password);
                 if (passwordValid)
                 {
                     return Ok();
                 }
             }
+
             return Unauthorized("Password invalid");
-        
+        }
+
+        //Post : api/SpinningUser/Edit
+        [HttpPost("Edit")]
+        public async Task<ActionResult<User_DTO>> EditUser(User_DTO user_DTO)
+        {
+            SpinningUser userFromDb = await _userManager.FindByEmailAsync(user_DTO.Email);
+            userFromDb.Email = user_DTO.Email;
+            userFromDb.UserName = user_DTO.Email;
+            userFromDb.FirstName = user_DTO.FirstName;
+            userFromDb.LastName = user_DTO.LastName;
+
+            IdentityResult result = await _userManager.UpdateAsync(userFromDb);
+            if (result.Succeeded)
+            {
+                return Ok(user_DTO);
+            }
+
+            return BadRequest();
         }
     }
 }

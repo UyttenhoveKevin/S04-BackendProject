@@ -17,21 +17,13 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LockoutEnd)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LockoutEnabled)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AccessFailedCount)
-            </th>
-
-            <th>
                 @Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastName)
             </th>
+            
+
             <th></th>
         </tr>
     </thead>
@@ -45,17 +37,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.LockoutEnd)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LockoutEnabled)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AccessFailedCount)
-                </td>
-
                 <td>
                     @Html.DisplayFor(modelItem => item.FirstName)
                 </td>
